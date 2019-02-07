@@ -45,9 +45,48 @@ ON fc.category_id = c.category_id
 WHERE c.name = 'Family';
 
 -- 7e --
-SELECT r.inventory_id, COUNT(c.last_name, SUM(p.amount)
-FROM rental as r
-JOIN payment as p
-ON c.customer_id = p.customer_id
-GROUP BY c.customer_id
-ORDER BY last_name ASC;
+SELECT f.title, COUNT(r.inventory_id)
+FROM rental r
+JOIN inventory i
+ON r.inventory_id = i.inventory_id
+JOIN film f
+ON f.film_id = i.film_id
+GROUP BY f.title
+ORDER BY COUNT(r.inventory_id) DESC;
+
+-- 7f --
+SELECT s.store_id, SUM(p.amount)
+FROM store s
+JOIN inventory i
+ON s.store_id = i.store_id
+JOIN rental r
+ON r.inventory_id = i.inventory_id
+JOIN payment p
+ON p.rental_id = r.rental_id
+GROUP BY s.store_id;
+
+
+-- 7g --
+SELECT s.store_id, cy.city, cu.country
+FROM store s
+JOIN address a
+ON s.address_id = a.address_id
+JOIN city cy
+ON a.city_id = cy.city_id
+JOIN country cu
+ON cy.country_id = cu.country_id;
+
+-- 7h --
+SELECT c.name, SUM(p.amount)
+FROM category c
+JOIN film_category AS fc
+ON c.category_id = fc.category_id
+JOIN inventory AS i
+ON i.film_id = fc.film_id
+JOIN rental AS r
+ON r.inventory_id = i.inventory_id
+JOIN payment AS p
+ON p.rental_id = r.rental_id
+GROUP BY c.name
+ORDER BY SUM(p.amount) DESC
+LIMIT 5;
